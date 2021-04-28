@@ -52,11 +52,38 @@
             "scripts": []
           },
           "configurations": {
-            "production": {
+            "prd": {
               "fileReplacements": [
                 {
-                  "replace": "apps/demo/src/environments/environment.ts",
-                  "with": "apps/demo/src/environments/environment.prod.ts"
+                  "replace": "apps/demo/src/app/child.module.ts",
+                  "with": "apps/demo/src/app/child.legacy.module.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            },
+            "dev": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/demo/src/app/child.module.ts",
+                  "with": "apps/demo/src/app/child.v1.module.ts"
                 }
               ],
               "optimization": true,
@@ -87,8 +114,11 @@
             "browserTarget": "demo:build"
           },
           "configurations": {
-            "production": {
-              "browserTarget": "demo:build:production"
+            "prd": {
+              "browserTarget": "demo:build:prd"
+            },
+            "dev": {
+              "browserTarget": "demo:build:dev"
             }
           }
         },
@@ -130,8 +160,8 @@
             "devServerTarget": "demo:serve"
           },
           "configurations": {
-            "production": {
-              "devServerTarget": "demo:serve:production"
+            "prd": {
+              "devServerTarget": "demo:serve:prd"
             }
           }
         },
@@ -139,6 +169,54 @@
           "builder": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["apps/demo-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
+    "foo": {
+      "projectType": "library",
+      "root": "libs/foo",
+      "sourceRoot": "libs/foo/src",
+      "prefix": "multi-versions",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/foo/tsconfig.lib.json",
+            "project": "libs/foo/ng-package.json"
+          },
+          "configurations": {
+            "prd": {
+              "tsConfig": "libs/foo/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "pack": {
+          "builder": "@nrwl/workspace:run-commands",
+          "options": {
+            "parallel": false,
+            "cwd": "dist/libs/foo",
+            "commands": [
+              "npm pack",
+              "mv -f acme-foo-*.tgz ../../../third-party/packages"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/foo/src/**/*.ts",
+              "libs/foo/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/foo"],
+          "options": {
+            "jestConfig": "libs/foo/jest.config.js",
+            "passWithNoTests": true
           }
         }
       }

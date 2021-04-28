@@ -14,7 +14,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "multiVersions",
+            "prefix": "acme",
             "style": "camelCase"
           }
         ],
@@ -22,7 +22,7 @@
           "error",
           {
             "type": "element",
-            "prefix": "multi-versions",
+            "prefix": "acme",
             "style": "kebab-case"
           }
         ]
